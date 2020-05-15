@@ -1,6 +1,6 @@
 using GradeBook.Enums;
 using System;
-
+using System.Linq;
 
 namespace GradeBook.GradeBooks
 {
@@ -13,17 +13,22 @@ namespace GradeBook.GradeBooks
         }
         public override char GetLetterGrade(double averageGrade)
         {
-            if (Students.Count <= 5)
+            if (Students.Count < 5)
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("Ranked grading requires at least 5 students.");
             }
-            if (averageGrade >= 80)
+            
+            var studentPct = (int)Math.Ceiling(Students.Count * 0.2);
+
+           var grades = Students.OrderByDescending(e => e.AverageGrade).Select(e => e.AverageGrade).ToList();
+            
+            if (grades[studentPct - 1] <= averageGrade)
                 return 'A';
-            else if (averageGrade >= 60)
+            else if (grades[(studentPct * 2) - 1] <= averageGrade)
                 return 'B';
-            else if (averageGrade >= 40)
+            else if (grades[(studentPct * 3) - 1] <= averageGrade)
                 return 'C';
-            else if (averageGrade >= 20)
+            else if (grades[(studentPct * 4) - 1] <= averageGrade)
                 return 'D';
             else
                 return 'F';
